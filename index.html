@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>Job Offer Comparison Calculator | Total Compensation Analysis Tool</title>
+    <meta name="title" content="Job Offer Comparison Calculator | Total Compensation Analysis Tool">
+    <meta name="description" content="A professional tool for side-by-side job offer comparison. Calculate total compensation including base salary, bonuses, equity, and RSUs to make data-driven career decisions.">
+    <meta name="keywords" content="job offer calculator, compensation comparison, salary calculator, RSU calculator, total rewards analysis, career decision tool, job offer analysis">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="author" content="CompCompare Analytics">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://compcompare.analytics/">
+    <meta property="og:title" content="Job Offer Comparison Calculator | Total Compensation Analysis">
+    <meta property="og:description" content="Compare multiple job offers side-by-side with our professional-grade financial analysis tool. Calculate true total compensation instantly.">
+    <meta property="og:image" content="https://compcompare.analytics/og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://compcompare.analytics/">
+    <meta property="twitter:title" content="Job Offer Comparison Calculator | Total Compensation Analysis">
+    <meta property="twitter:description" content="Professional decision support for job offers. Compare base, bonus, and equity with absolute clarity.">
+    <meta property="twitter:image" content="https://compcompare.analytics/og-image.jpg">
+
+    <!-- JSON-LD Structured Data for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "CompCompare Job Offer Calculator",
+      "description": "Professional tool for side-by-side job offer comparison. Analyze total compensation including salary, bonuses, and equity.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Side-by-side offer comparison",
+        "Total compensation calculation",
+        "Equity and RSU vesting analysis",
+        "Professional PDF export report"
+      ]
+    }
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .offer-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Hide number input spinners */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Custom Modal Scrollbar */
+        #export-modal::-webkit-scrollbar {
+            width: 8px;
+        }
+        #export-modal::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="border-b border-slate-200 bg-white/80 sticky top-0 z-50 backdrop-blur-md no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-200">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+                <span class="font-bold text-slate-900 tracking-tight text-xl italic underline decoration-indigo-500/30 decoration-4">CompCompare</span>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="generateExport()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-md shadow-indigo-100 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Export Report
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-16 flex-grow">
+        <header class="max-w-3xl mb-16">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-widest rounded-full mb-6">
+                Professional Decision Support
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 leading-[1.05]">
+                Compare offers with <span class="text-indigo-600">absolute clarity.</span>
+            </h1>
+            <p class="text-xl text-slate-500 leading-relaxed font-medium">
+                A quantitative tool for side-by-side total compensation analysis. Use this calculator to compare salary, bonuses, and equity.
+            </p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <!-- Sidebar -->
+            <aside class="lg:col-span-3">
+                <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm sticky top-28">
+                    <h2 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Current Standing</h2>
+                    <div id="summary-list" class="space-y-6 mb-10"></div>
+                    
+                    <div class="pt-8 border-t border-slate-100">
+                        <h3 class="text-xs font-bold text-slate-900 uppercase mb-4 tracking-wider">Methodology</h3>
+                        <div class="space-y-4">
+                            <div class="group">
+                                <p class="text-xs font-bold text-slate-800 mb-1">Total Year 1 Value</p>
+                                <p class="text-[11px] text-slate-400 leading-normal">Sum of Base Salary + (Base × Var%) + Sign-on + Equity vest.</p>
+                            </div>
+                            <div class="group">
+                                <p class="text-xs font-bold text-slate-800 mb-1">Relative Delta</p>
+                                <p class="text-[11px] text-slate-400 leading-normal">The percentage difference compared to the highest offer.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Offers Grid -->
+            <section class="lg:col-span-9">
+                <div id="offers-container" class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch"></div>
+                
+                <div class="mt-12 flex items-center justify-center no-print">
+                    <button onclick="addOffer()" class="group flex items-center px-10 py-5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl transition-all w-full md:w-auto justify-center shadow-xl shadow-slate-200">
+                        <svg class="w-5 h-5 mr-3 group-hover:scale-125 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Add Another Offer
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-16 mt-24 no-print">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 border-b border-slate-800 pb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="w-6 h-6 bg-indigo-500 rounded flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <span class="text-white font-bold tracking-tight text-lg">CompCompare</span>
+                    </div>
+                    <p class="max-w-sm text-sm leading-relaxed">
+                        A professional-grade compensation analysis tool designed to help candidates make informed decisions during the offer negotiation process.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-6 uppercase tracking-widest">Resources</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Negotiation Guide</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Equity 101</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Tax Calculator</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-6 uppercase tracking-widest">Support</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Contact Expert</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition-colors">Share Feedback</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-xs">© 2026 CompCompare Analytics. All rights reserved.</p>
+                <div class="flex gap-8 text-xs font-bold uppercase tracking-widest">
+                    <span class="text-slate-500">Secure</span>
+                    <span class="text-slate-500">Private</span>
+                    <span class="text-slate-500">Precise</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- EXPORT MODAL (REPORT VIEW) -->
+    <div id="export-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+        <div id="export-modal" class="bg-white w-full max-w-5xl max-h-[95vh] rounded-[2rem] overflow-y-auto shadow-2xl relative flex flex-col border border-white/20">
+            <div class="sticky top-0 bg-white/95 backdrop-blur px-8 py-6 border-b flex justify-between items-center z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center text-white font-bold">C</div>
+                    <h2 class="text-lg font-bold text-slate-900">Compensation Analysis Report</h2>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="window.print()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold no-print">Print to PDF</button>
+                    <button onclick="closeExport()" class="text-slate-400 hover:text-slate-600 p-2 no-print">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="report-content" class="p-12 bg-white space-y-12">
+                <!-- Content injected via JS -->
+            </div>
+
+            <div class="p-12 pt-0 grid grid-cols-2 gap-8 border-t border-slate-50 mt-8 pt-12">
+                <div class="border-t border-slate-200 pt-4">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-8">Reviewer Notes</p>
+                    <div class="h-16"></div>
+                </div>
+                <div class="border-t border-slate-200 pt-4 text-right">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-8">Date of Review</p>
+                    <p id="report-date" class="text-sm font-bold text-slate-900"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Template -->
+    <template id="offer-template">
+        <div class="offer-card bg-white rounded-[2rem] border border-slate-200 flex flex-col h-full shadow-sm hover:shadow-2xl hover:border-indigo-200/50 overflow-hidden group">
+            <div class="p-8 pb-4">
+                <div class="flex justify-between items-start mb-8">
+                    <div class="flex-grow">
+                        <input type="text" placeholder="Company Name" class="company-name block w-full bg-transparent border-none p-0 text-3xl font-black text-slate-900 focus:ring-0 placeholder:text-slate-200" oninput="calculate()">
+                        <input type="text" placeholder="Job Title" class="job-title block w-full bg-transparent border-none p-0 text-xs font-bold text-indigo-500 uppercase tracking-widest focus:ring-0 placeholder:text-slate-200 mt-2" oninput="calculate()">
+                    </div>
+                    <button onclick="removeOffer(this)" class="p-2 text-slate-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 no-print">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-7">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2.5">Guaranteed Base</label>
+                        <div class="relative group/input">
+                            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 font-bold">$</span>
+                            <input type="number" step="1000" class="base-pay w-full pl-10 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:border-indigo-400 focus:ring-8 focus:ring-indigo-50 transition-all text-slate-700 font-bold" oninput="calculate()">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2.5">Variable %</label>
+                            <div class="relative">
+                                <input type="number" class="variable-percent w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:border-indigo-400 focus:ring-8 focus:ring-indigo-50 transition-all text-slate-700 font-bold text-center" oninput="calculate()">
+                                <span class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 font-bold">%</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2.5">Sign-on</label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 font-bold">$</span>
+                                <input type="number" step="1000" class="signing-bonus w-full pl-10 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:border-indigo-400 focus:ring-8 focus:ring-indigo-50 transition-all text-slate-700 font-bold" oninput="calculate()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2.5">Annual Stock/Equity</label>
+                        <div class="relative">
+                            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 font-bold">$</span>
+                            <input type="number" step="1000" class="perks w-full pl-10 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:border-indigo-400 focus:ring-8 focus:ring-indigo-50 transition-all text-slate-700 font-bold" oninput="calculate()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 bg-slate-900 p-10">
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mb-2">TC Year One</span>
+                    <span class="result-total text-4xl font-black text-white tracking-tighter">$0</span>
+                </div>
+                <div class="mt-8 flex items-center gap-3">
+                    <div class="flex-grow h-3 bg-white/5 rounded-full overflow-hidden">
+                        <div class="result-bar h-full bg-indigo-500 transition-all duration-1000 ease-out" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        function addOffer(data = null) {
+            const container = document.getElementById('offers-container');
+            const template = document.getElementById('offer-template');
+            const clone = template.content.cloneNode(true);
+            const card = clone.querySelector('.offer-card');
+            
+            if (data) {
+                card.querySelector('.company-name').value = data.name || '';
+                card.querySelector('.job-title').value = data.title || '';
+                card.querySelector('.base-pay').value = data.base || '';
+                card.querySelector('.variable-percent').value = data.var || '';
+                card.querySelector('.signing-bonus').value = data.bonus || '';
+                card.querySelector('.perks').value = data.perks || '';
+            } else {
+                card.querySelector('.company-name').value = "Acme Corp";
+                card.querySelector('.job-title').value = "Product Lead";
+                card.querySelector('.base-pay').value = 150000;
+                card.querySelector('.variable-percent').value = 10;
+            }
+
+            container.appendChild(clone);
+            calculate();
+        }
+
+        function removeOffer(btn) {
+            btn.closest('.offer-card').remove();
+            calculate();
+        }
+
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+            }).format(num);
+        }
+
+        function calculate() {
+            const cards = document.querySelectorAll('.offer-card');
+            const results = [];
+
+            cards.forEach((card, index) => {
+                const name = card.querySelector('.company-name').value || `Offer ${index + 1}`;
+                const base = parseFloat(card.querySelector('.base-pay').value) || 0;
+                const varPct = parseFloat(card.querySelector('.variable-percent').value) || 0;
+                const bonus = parseFloat(card.querySelector('.signing-bonus').value) || 0;
+                const perks = parseFloat(card.querySelector('.perks').value) || 0;
+
+                const variableAmount = (base * (varPct / 100));
+                const total = base + variableAmount + bonus + perks;
+
+                results.push({ name, total, element: card });
+            });
+
+            const maxTotal = results.length > 0 ? Math.max(...results.map(r => r.total)) : 0;
+
+            results.forEach(res => {
+                const bar = res.element.querySelector('.result-bar');
+                const totalDisplay = res.element.querySelector('.result-total');
+                totalDisplay.innerText = formatCurrency(res.total);
+                const percentage = maxTotal > 0 ? (res.total / maxTotal) * 100 : 0;
+                bar.style.width = percentage + '%';
+                bar.className = (res.total === maxTotal && results.length > 1) 
+                    ? 'result-bar h-full bg-gradient-to-r from-indigo-500 to-cyan-400' 
+                    : 'result-bar h-full bg-slate-700';
+            });
+
+            updateSummary(results);
+        }
+
+        function updateSummary(results) {
+            const summaryList = document.getElementById('summary-list');
+            if (results.length === 0) {
+                summaryList.innerHTML = '<p class="text-xs text-slate-400 italic">No offers found.</p>';
+                return;
+            }
+            const sorted = [...results].sort((a, b) => b.total - a.total);
+            summaryList.innerHTML = '';
+            sorted.forEach((res, i) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center gap-4 group cursor-default';
+                item.innerHTML = `
+                    <div class="w-8 h-8 rounded-xl ${i === 0 ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'} flex items-center justify-center text-[11px] font-black transition-colors">${i + 1}</div>
+                    <div class="flex-grow truncate">
+                        <p class="text-[11px] font-black text-slate-900 truncate uppercase tracking-widest">${res.name}</p>
+                        <p class="text-sm font-bold text-slate-500">${formatCurrency(res.total)}</p>
+                    </div>
+                `;
+                summaryList.appendChild(item);
+            });
+        }
+
+        function generateExport() {
+            const cards = document.querySelectorAll('.offer-card');
+            const container = document.getElementById('report-content');
+            document.getElementById('report-date').innerText = new Date().toLocaleDateString();
+            
+            const results = Array.from(cards).map(card => {
+                const base = parseFloat(card.querySelector('.base-pay').value) || 0;
+                const varPct = parseFloat(card.querySelector('.variable-percent').value) || 0;
+                const bonus = parseFloat(card.querySelector('.signing-bonus').value) || 0;
+                const perks = parseFloat(card.querySelector('.perks').value) || 0;
+                const variableAmount = base * (varPct / 100);
+                return {
+                    name: card.querySelector('.company-name').value || 'Unnamed Company',
+                    title: card.querySelector('.job-title').value || 'Unspecified Role',
+                    base, varPct, variableAmount, bonus, perks,
+                    total: base + variableAmount + bonus + perks
+                };
+            }).sort((a, b) => b.total - a.total);
+
+            container.innerHTML = `
+                <div class="flex justify-between items-start border-b-2 border-slate-900 pb-12 mb-12">
+                    <div>
+                        <p class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-2">Confidential Analysis</p>
+                        <h1 class="text-5xl font-black text-slate-900 mb-2">Total Rewards Summary</h1>
+                        <p class="text-slate-500 font-medium">Comparative Financial Analysis • Professional Decision Support</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-slate-900">ID: COMP-${Math.floor(Math.random() * 90000) + 10000}</p>
+                        <p class="text-sm text-slate-400">${new Date().toLocaleDateString()}</p>
+                    </div>
+                </div>
+            `;
+
+            let tableHtml = `
+                <div class="border rounded-2xl overflow-hidden shadow-sm">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900 text-white">
+                            <tr>
+                                <th class="p-6 text-[10px] font-black uppercase tracking-widest">Opportunity</th>
+                                <th class="p-6 text-right text-[10px] font-black uppercase tracking-widest">Base</th>
+                                <th class="p-6 text-right text-[10px] font-black uppercase tracking-widest">Variable</th>
+                                <th class="p-6 text-right text-[10px] font-black uppercase tracking-widest">Bonus/RSUs</th>
+                                <th class="p-6 text-right text-[10px] font-black uppercase tracking-widest">Total Value</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+            `;
+
+            results.forEach(res => {
+                tableHtml += `
+                    <tr>
+                        <td class="p-6">
+                            <p class="font-black text-slate-900 uppercase text-sm">${res.name}</p>
+                            <p class="text-xs font-bold text-indigo-500 mt-1">${res.title}</p>
+                        </td>
+                        <td class="p-6 text-right font-bold text-slate-700">${formatCurrency(res.base)}</td>
+                        <td class="p-6 text-right font-bold text-slate-700">${formatCurrency(res.variableAmount)}</td>
+                        <td class="p-6 text-right font-bold text-slate-700">${formatCurrency(res.bonus + res.perks)}</td>
+                        <td class="p-6 text-right">
+                            <span class="text-xl font-black text-slate-900">${formatCurrency(res.total)}</span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `</tbody></table></div>`;
+            container.innerHTML += tableHtml;
+
+            if (results.length > 0) {
+                container.innerHTML += `
+                    <div class="bg-slate-50 rounded-[2rem] p-10 border border-slate-200">
+                        <div class="flex flex-col md:flex-row gap-8 items-center">
+                            <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-100">
+                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div class="flex-grow">
+                                <h3 class="text-2xl font-black text-slate-900 mb-2">Financial Leader: ${results[0].name}</h3>
+                                <p class="text-slate-600 font-medium leading-relaxed">The analysis identifies <strong class="text-slate-900">${results[0].name}</strong> as the optimal financial choice, providing a ${formatCurrency(results[0].total - (results[1]?.total || 0))} annual advantage over the nearest alternative.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('export-overlay').classList.remove('hidden');
+        }
+
+        function closeExport() {
+            document.getElementById('export-overlay').classList.add('hidden');
+        }
+
+        window.onload = () => {
+            addOffer({name: 'TechScale', title: 'Principal Engineer', base: 185000, var: 20, bonus: 30000, perks: 50000});
+            addOffer({name: 'LegacyCorp', title: 'Lead Architect', base: 170000, var: 10, bonus: 15000, perks: 20000});
+        };
+    </script>
+</body>
+</html>
